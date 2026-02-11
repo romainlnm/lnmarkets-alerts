@@ -67,6 +67,11 @@ def check_price_movement(current_price, state):
     return alerts
 
 
+def is_long(side: str) -> bool:
+    """Check if position is long (buy)."""
+    return side in ("b", "buy")
+
+
 def check_positions(positions, current_price):
     """Check positions for liquidation risk and large losses."""
     alerts = []
@@ -79,11 +84,11 @@ def check_positions(positions, current_price):
         pl = trade.get("pl", 0)
         liq_price = trade.get("liquidation", 0)
         trade_id = str(trade.get("id", "?"))[:8]
-        side_str = "LONG" if side == "b" else "SHORT"
+        side_str = "LONG" if is_long(side) else "SHORT"
         
         # Check liquidation distance
         if liq_price and current_price:
-            if side == "b":  # long
+            if is_long(side):  # long
                 liq_distance = ((current_price - liq_price) / current_price) * 100
             else:  # short
                 liq_distance = ((liq_price - current_price) / current_price) * 100
@@ -114,10 +119,10 @@ def check_positions(positions, current_price):
         margin = cross.get("margin", 0)
         pl = cross.get("pl", 0)
         liq_price = cross.get("liquidation", 0)
-        side_str = "LONG" if side == "b" else "SHORT"
+        side_str = "LONG" if is_long(side) else "SHORT"
         
         if liq_price and current_price:
-            if side == "b":
+            if is_long(side):
                 liq_distance = ((current_price - liq_price) / current_price) * 100
             else:
                 liq_distance = ((liq_price - current_price) / current_price) * 100

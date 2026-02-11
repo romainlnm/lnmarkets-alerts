@@ -12,6 +12,11 @@ def sats_to_btc(sats: int) -> float:
     """Convert satoshis to BTC."""
     return sats / 100_000_000
 
+def is_long(side: str) -> bool:
+    """Check if position is long (buy)."""
+    return side in ("b", "buy")
+
+
 def format_isolated_trade(trade: dict, current_price: float) -> str:
     """Format an isolated margin trade for display."""
     side = trade.get("side", "unknown")
@@ -22,13 +27,13 @@ def format_isolated_trade(trade: dict, current_price: float) -> str:
     liq_price = trade.get("liquidation", 0)
     trade_id = trade.get("id", "?")[:8]
     
-    side_emoji = "🟢" if side == "b" else "🔴"
-    side_str = "LONG" if side == "b" else "SHORT"
+    side_emoji = "🟢" if is_long(side) else "🔴"
+    side_str = "LONG" if is_long(side) else "SHORT"
     
     # Calculate distance to liquidation
     liq_distance = None
     if liq_price and current_price:
-        if side == "b":  # long
+        if is_long(side):  # long
             liq_distance = ((current_price - liq_price) / current_price) * 100
         else:  # short
             liq_distance = ((liq_price - current_price) / current_price) * 100
@@ -57,13 +62,13 @@ def format_cross_position(pos: dict, current_price: float) -> str:
     pl = pos.get("pl", 0)
     liq_price = pos.get("liquidation", 0)
     
-    side_emoji = "🟢" if side == "b" else "🔴"
-    side_str = "LONG" if side == "b" else "SHORT"
+    side_emoji = "🟢" if is_long(side) else "🔴"
+    side_str = "LONG" if is_long(side) else "SHORT"
     
     # Calculate distance to liquidation
     liq_distance = None
     if liq_price and current_price:
-        if side == "b":  # long
+        if is_long(side):  # long
             liq_distance = ((current_price - liq_price) / current_price) * 100
         else:  # short
             liq_distance = ((liq_price - current_price) / current_price) * 100
@@ -94,19 +99,19 @@ def check_alerts(isolated: list, cross: dict, current_price: float) -> list:
         trade_id = trade.get("id", "?")[:8]
         
         if liq_price and current_price:
-            if side == "b":
+            if is_long(side):
                 liq_distance = ((current_price - liq_price) / current_price) * 100
             else:
                 liq_distance = ((liq_price - current_price) / current_price) * 100
             
             if liq_distance < 10:
-                side_str = "LONG" if side == "b" else "SHORT"
+                side_str = "LONG" if is_long(side) else "SHORT"
                 alerts.append(f"⚠️ LIQUIDATION WARNING: Isolated {side_str} #{trade_id} only {liq_distance:.1f}% from liquidation!")
         
         if margin > 0 and pl < 0:
             loss_pct = abs(pl) / margin * 100
             if loss_pct > 20:
-                side_str = "LONG" if side == "b" else "SHORT"
+                side_str = "LONG" if is_long(side) else "SHORT"
                 alerts.append(f"📉 LOSS: Isolated {side_str} #{trade_id} down {loss_pct:.1f}% ({pl:,} sats)")
     
     # Check cross position
@@ -118,19 +123,19 @@ def check_alerts(isolated: list, cross: dict, current_price: float) -> list:
         liq_price = cross.get("liquidation", 0)
         
         if liq_price and current_price:
-            if side == "b":
+            if is_long(side):
                 liq_distance = ((current_price - liq_price) / current_price) * 100
             else:
                 liq_distance = ((liq_price - current_price) / current_price) * 100
             
             if liq_distance < 10:
-                side_str = "LONG" if side == "b" else "SHORT"
+                side_str = "LONG" if is_long(side) else "SHORT"
                 alerts.append(f"⚠️ LIQUIDATION WARNING: Cross {side_str} only {liq_distance:.1f}% from liquidation!")
         
         if margin > 0 and pl < 0:
             loss_pct = abs(pl) / margin * 100
             if loss_pct > 20:
-                side_str = "LONG" if side == "b" else "SHORT"
+                side_str = "LONG" if is_long(side) else "SHORT"
                 alerts.append(f"📉 LOSS: Cross {side_str} down {loss_pct:.1f}% ({pl:,} sats)")
     
     return alerts
