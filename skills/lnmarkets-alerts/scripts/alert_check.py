@@ -168,6 +168,26 @@ def main():
             positions = get_all_positions()
             position_alerts = check_positions(positions, current_price)
             all_alerts.extend(position_alerts)
+            
+            # Track positions to detect liquidations
+            current_ids = set()
+            for trade in positions.get("isolated", []):
+                current_ids.add(trade.get("id"))
+            
+            # Check for disappeared positions (likely liquidated)
+            previous_ids = set(state.get("tracked_positions", []))
+            disappeared = previous_ids - current_ids
+            
+            for pos_id in disappeared:
+                all_alerts.append(
+                    f"💀 POSITION CLOSED/LIQUIDATED!\n"
+                    f"   Trade #{str(pos_id)[:8]} is gone\n"
+                    f"   Check your account for details"
+                )
+            
+            # Save current position IDs
+            state["tracked_positions"] = list(current_ids)
+            
         except Exception as e:
             if "LNM_API" in str(e):
                 pass  # No credentials, skip position check
