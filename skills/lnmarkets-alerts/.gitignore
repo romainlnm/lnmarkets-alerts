@@ -4,3 +4,4 @@
 # Python
 __pycache__/
 *.pyc
+.alert_state.json
