@@ -9,19 +9,19 @@ Monitor your BTC positions and get alerts for liquidation risk, losses, and pric
 ```
 🔔 LN MARKETS ALERTS
 
-BTC: $102,450
+BTC: $65,420
 
 🚨 LIQUIDATION RISK!
    Isolated LONG #a1f11a32
    Only 2.8% from liquidation
-   Current: $102,450 | Liq: $99,580
+   Current: $65,420 | Liq: $63,590
 
 📉 LARGE LOSS
    Isolated SHORT #b2d6c918
    Down 34.2% (-4,521 sats)
 
 📈 BTC moved +5.3% in 5 minutes!
-   $97,280 → $102,450
+   $62,100 → $65,420
 
 💀 POSITION CLOSED/LIQUIDATED!
    Trade #c3e7d029 is gone
