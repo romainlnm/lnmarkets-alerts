@@ -2,6 +2,31 @@
 
 Monitor your BTC positions and get alerts for liquidation risk, losses, and price movements via the [LN Markets](https://lnmarkets.com) v3 API.
 
+> 🦞 **OpenClaw Skill** — Works standalone or as an [OpenClaw](https://github.com/openclaw/openclaw) AI assistant skill.
+
+## Alert Preview
+
+```
+🔔 LN MARKETS ALERTS
+
+BTC: $102,450
+
+🚨 LIQUIDATION RISK!
+   Isolated LONG #a1f11a32
+   Only 2.8% from liquidation
+   Current: $102,450 | Liq: $99,580
+
+📉 LARGE LOSS
+   Isolated SHORT #b2d6c918
+   Down 34.2% (-4,521 sats)
+
+📈 BTC moved +5.3% in 5 minutes!
+   $97,280 → $102,450
+
+💀 POSITION CLOSED/LIQUIDATED!
+   Trade #c3e7d029 is gone
+```
+
 ## Features
 
 - 📈 **BTC Price** — Real-time index price from LN Markets
