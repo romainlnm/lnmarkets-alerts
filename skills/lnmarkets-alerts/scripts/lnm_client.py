@@ -13,6 +13,20 @@ import urllib.error
 
 API_BASE = "https://api.lnmarkets.com/v3"
 
+def get_server_time() -> int:
+    """Get server timestamp to avoid clock sync issues."""
+    try:
+        req = urllib.request.Request(f"{API_BASE}/time", method="GET")
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            # Parse ISO time and convert to ms timestamp
+            from datetime import datetime
+            dt = datetime.fromisoformat(data["time"].replace("Z", "+00:00"))
+            return int(dt.timestamp() * 1000)
+    except:
+        # Fallback to local time
+        return int(time.time() * 1000)
+
 def get_credentials():
     """Get API credentials from environment variables."""
     key = os.environ.get("LNM_API_KEY")
@@ -37,7 +51,8 @@ def sign_request(secret: str, timestamp: str, method: str, path: str, data: str 
 
 def api_request(method: str, endpoint: str, params: dict = None, auth: bool = True) -> dict:
     """Make API request to LN Markets v3."""
-    timestamp = str(int(time.time() * 1000))
+    # Use server time to avoid clock sync issues
+    timestamp = str(get_server_time()) if auth else str(int(time.time() * 1000))
     path = f"/v3{endpoint}"
     
     # Build data string for signature
